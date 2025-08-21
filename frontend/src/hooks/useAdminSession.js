@@ -9,10 +9,15 @@ export const useAdminSession = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        axios.get("http://localhost:8080/api/admin/me", { withCredentials: true })
-;
+        await axios.get("http://localhost:8080/api/admin/me", {
+          withCredentials: true,
+        });
+        // ✅ If request is successful, do nothing (stay on page)
       } catch (err) {
-        navigate("/admin/login");
+        // ✅ If 401 or any error -> redirect to login
+        if (err.response?.status === 401) {
+          navigate("/admin/login");
+        }
       }
     };
 

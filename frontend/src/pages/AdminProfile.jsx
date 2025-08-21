@@ -62,55 +62,67 @@ const AdminProfile = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="max-w-2xl mx-auto mt-10 p-8 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg"
+        className="max-w-3xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-lg border border-gray-200"
       >
-        <h2 className="text-3xl font-bold text-blue-800 dark:text-white mb-6">Admin Profile</h2>
+        <h2 className="text-3xl font-bold text-indigo-800 mb-6">
+          Admin Profile
+        </h2>
 
         {/* Profile Section */}
         <div className="mb-8">
-          <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-300">Username</label>
+          <label className="block mb-1 font-semibold text-gray-700">
+            Username
+          </label>
           <input
             type="text"
             value={admin.username}
             onChange={(e) => setAdmin({ ...admin, username: e.target.value })}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"
           />
 
-          <label className="block mt-4 mb-1 font-semibold text-gray-700 dark:text-gray-300">Email</label>
+          <label className="block mt-4 mb-1 font-semibold text-gray-700">
+            Email
+          </label>
           <input
             type="email"
             value={admin.email}
             onChange={(e) => setAdmin({ ...admin, email: e.target.value })}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400"
           />
 
           <button
             onClick={handleProfileUpdate}
-            className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition"
+            className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition"
           >
             Update Profile
           </button>
         </div>
 
-        <hr className="border-gray-300 dark:border-gray-600 my-8" />
+        <hr className="border-gray-300 my-8" />
 
         {/* Password Section */}
-        <h3 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-4">Change Password</h3>
+        <h3 className="text-2xl font-bold text-green-700 mb-4">
+          Change Password
+        </h3>
 
-        <label className="block mb-1 font-semibold text-gray-700 dark:text-gray-300">Current Password</label>
+        <label className="block mb-1 font-semibold text-gray-700">
+          Current Password
+        </label>
         <input
           type="password"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-white"
+          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-400"
         />
 
-        <label className="block mt-4 mb-1 font-semibold text-gray-700 dark:text-gray-300">New Password</label>
+        <label className="block mt-4 mb-1 font-semibold text-gray-700">
+          New Password
+        </label>
         <input
           type="password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-white"
+          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-400"
         />
 
         <button
