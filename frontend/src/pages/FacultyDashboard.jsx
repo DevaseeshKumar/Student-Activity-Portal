@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import FacultyNavbar from "../components/FacultyNavbar";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042"];
 
@@ -10,6 +13,7 @@ const FacultyDashboard = () => {
   const [events, setEvents] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,12 +47,20 @@ const FacultyDashboard = () => {
         setLoading(false);
       } catch (err) {
         console.error(err);
+
+        if (err.response && err.response.status === 401) {
+          toast.error("Session expired. Please log in again.", { theme: "light" });
+          setTimeout(() => navigate("/faculty/login"), 2000);
+        } else {
+          toast.error("Failed to load dashboard data", { theme: "light" });
+        }
+
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   if (loading) return <div className="p-6 text-center text-blue-600">Loading dashboard...</div>;
 
@@ -66,10 +78,12 @@ const FacultyDashboard = () => {
   return (
     <>
       <FacultyNavbar />
+      <ToastContainer position="top-center" autoClose={3000} theme="light" />
+
       <div className="min-h-screen bg-gray-100 p-6">
         {/* Faculty Name */}
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-6 mb-8 text-center">
-          <h1 className="text-3xl font-bold text-blue-700">Welcome, {faculty.name}</h1>
+          <h1 className="text-3xl font-bold text-blue-700">Welcome, {faculty?.name}</h1>
         </div>
 
         {/* Stats Cards */}

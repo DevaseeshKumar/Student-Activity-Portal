@@ -26,11 +26,12 @@ const AdminNavbar = () => {
   const navLinks = [
     { label: "Dashboard", to: "/admin/dashboard" },
     { label: "Pending Faculties", to: "/admin/unapproved-faculties" },
-    { label: "Profile", to: "/admin/profile" },
+    
     { label: "Add Event", to: "/admin/addevent" },
     { label: "View Students", to: "/admin/view-students" },
     { label: "View Faculty", to: "/admin/view-faculty" },
     { label: "View Events", to: "/admin/view-events" },
+    { label: "Profile", to: "/admin/profile" },
   ];
 
   return (

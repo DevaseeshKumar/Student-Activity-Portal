@@ -25,9 +25,10 @@ const StudentNavbar = () => {
 
   const navLinks = [
     { label: "Dashboard", to: "/student/dashboard" },
-    { label: "Profile", to: "/student/profile" },
+    
     { label: "View Events", to: "/student/view-events" },
     { label: "Registered Events", to: "/student/registered-event" },
+    { label: "Profile", to: "/student/profile" },
   ];
 
   return (
