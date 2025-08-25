@@ -13,4 +13,5 @@ public class FacultyDTO {
     private String department;
     private String gender;
     private boolean approved;
+    private int assignedEventsCount; // ✅ NEW
 }

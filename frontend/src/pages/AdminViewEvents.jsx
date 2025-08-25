@@ -8,13 +8,20 @@ import "react-toastify/dist/ReactToastify.css";
 
 const AdminViewEvents = () => {
   const [events, setEvents] = useState([]);
+  const [faculties, setFaculties] = useState([]);
   const [selectedEventStudents, setSelectedEventStudents] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(true);
   const [fetchingStudents, setFetchingStudents] = useState(false);
+  const [editEvent, setEditEvent] = useState(null);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState(null);
+
   const navigate = useNavigate();
 
-  // ✅ Session & error handler
+
   const handleSessionError = (err) => {
     if (err.response?.status === 401) {
       toast.error("Session expired. Redirecting to login...", { autoClose: 2000 });
@@ -25,7 +32,6 @@ const AdminViewEvents = () => {
     setLoading(false);
   };
 
-  // Fetch all events
   const fetchEvents = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/admin/events", {
@@ -39,15 +45,27 @@ const AdminViewEvents = () => {
     }
   };
 
-  // Validate session first
+  const fetchFaculties = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/admin/faculties", {
+        withCredentials: true,
+      });
+      setFaculties(res.data || []);
+    } catch (err) {
+      handleSessionError(err);
+    }
+  };
+
   useEffect(() => {
     axios
       .get("http://localhost:8080/api/admin/me", { withCredentials: true })
-      .then(() => fetchEvents())
+      .then(() => {
+        fetchEvents();
+        fetchFaculties();
+      })
       .catch(handleSessionError);
   }, [navigate]);
 
-  // View students for a specific event
   const handleViewStudents = async (eventId) => {
     setFetchingStudents(true);
     try {
@@ -55,18 +73,60 @@ const AdminViewEvents = () => {
         `http://localhost:8080/api/admin/events/${eventId}/students`,
         { withCredentials: true }
       );
-
-      const studentsWithAttendance = res.data.map((s) => ({
-        ...s,
-        attendance: s.attendance ?? null,
-      }));
-
-      setSelectedEventStudents(studentsWithAttendance);
+      setSelectedEventStudents(
+        res.data.map((s) => ({ ...s, attendance: s.attendance ?? null }))
+      );
       setShowPopup(true);
     } catch (err) {
       handleSessionError(err);
     } finally {
       setFetchingStudents(false);
+    }
+  };
+
+  const handleEditEvent = (event) => {
+  setEditEvent({
+    ...event,
+    facultyId: event.facultyId ?? event.faculty?.id ?? "", // ✅ sets facultyId for the dropdown
+  });
+  setShowEditPopup(true);
+};
+
+
+  const handleUpdateEvent = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(
+        `http://localhost:8080/api/admin/events/${editEvent.id}`,
+        {
+          name: editEvent.name,
+          description: editEvent.description,
+          date: editEvent.date,
+          venue: editEvent.venue,
+          facultyId: editEvent.facultyId || null, // 🔹 Faculty reassignment here
+        },
+        { withCredentials: true }
+      );
+      toast.success("Event updated successfully");
+      setShowEditPopup(false);
+      fetchEvents();
+    } catch (err) {
+      handleSessionError(err);
+    }
+  };
+
+  const confirmDeleteEvent = async () => {
+    if (!eventToDelete) return;
+    try {
+      await axios.delete(`http://localhost:8080/api/admin/events/${eventToDelete.id}`, {
+        withCredentials: true,
+      });
+      toast.success("Event deleted successfully");
+      setShowDeletePopup(false);
+      setEventToDelete(null);
+      fetchEvents();
+    } catch (err) {
+      handleSessionError(err);
     }
   };
 
@@ -113,23 +173,117 @@ const AdminViewEvents = () => {
                   <strong>Faculty:</strong> {event.facultyName || "Unassigned"}
                 </p>
 
-                <button
-                  onClick={() => handleViewStudents(event.id)}
-                  disabled={fetchingStudents}
-                  className={`mt-4 w-full py-2 rounded-lg text-white font-medium transition ${
-                    fetchingStudents
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-indigo-600 hover:bg-indigo-700"
-                  }`}
-                >
-                  {fetchingStudents ? "Fetching Students..." : "View Registered Students"}
-                </button>
+                <div className="mt-4 flex flex-col gap-2">
+                  <button
+                    onClick={() => handleViewStudents(event.id)}
+                    disabled={fetchingStudents}
+                    className={`w-full py-2 rounded-lg text-white font-medium transition ${
+                      fetchingStudents
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-indigo-600 hover:bg-indigo-700"
+                    }`}
+                  >
+                    {fetchingStudents ? "Fetching Students..." : "View Students"}
+                  </button>
+
+                  <button
+                    onClick={() => handleEditEvent(event)}
+                    className="w-full py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition"
+                  >
+                    Edit Event
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setEventToDelete(event);
+                      setShowDeletePopup(true);
+                    }}
+                    className="w-full py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition"
+                  >
+                    Delete Event
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Modal / Popup */}
+        {/* 🔹 Edit Event Popup (with faculty dropdown) */}
+        {showEditPopup && editEvent && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-[90%] max-w-lg shadow-xl relative">
+              <h2 className="text-2xl font-bold mb-4 text-center">Edit Event</h2>
+              <form onSubmit={handleUpdateEvent} className="space-y-4">
+                <input
+                  type="text"
+                  value={editEvent.name}
+                  onChange={(e) => setEditEvent({ ...editEvent, name: e.target.value })}
+                  placeholder="Event Name"
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+                <textarea
+                  value={editEvent.description}
+                  onChange={(e) =>
+                    setEditEvent({ ...editEvent, description: e.target.value })
+                  }
+                  placeholder="Description"
+                  className="w-full border px-3 py-2 rounded"
+                />
+                <input
+                  type="text"
+                  value={editEvent.date}
+                  onChange={(e) => setEditEvent({ ...editEvent, date: e.target.value })}
+                  placeholder="Date"
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+                <input
+                  type="text"
+                  value={editEvent.venue}
+                  onChange={(e) => setEditEvent({ ...editEvent, venue: e.target.value })}
+                  placeholder="Venue"
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+
+                {/* 🔹 Faculty dropdown for reassign */}
+                <select
+  value={editEvent.facultyId || ""}
+  onChange={(e) =>
+    setEditEvent({ ...editEvent, facultyId: e.target.value })
+  }
+  className="w-full border px-3 py-2 rounded"
+>
+  <option value="">Assigned Faculty: {editEvent.facultyName || "Unassigned"}</option>
+  {faculties.map((f) => (
+    <option key={f.id} value={f.id}>
+      {f.name} ({f.department})
+    </option>
+  ))}
+</select>
+
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    className="flex-1 px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowEditPopup(false)}
+                    className="flex-1 px-5 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* 🔹 Students Popup */}
         {showPopup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-[90%] max-w-lg shadow-xl overflow-y-auto max-h-[85vh] relative">
@@ -179,6 +333,36 @@ const AdminViewEvents = () => {
               >
                 Close
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* 🔹 Delete Confirmation Popup */}
+        {showDeletePopup && eventToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-[90%] max-w-sm shadow-xl relative text-center">
+              <h2 className="text-xl font-bold mb-4 text-red-600">Confirm Delete</h2>
+              <p className="mb-6">
+                Are you sure you want to delete <strong>{eventToDelete.name}</strong>?
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={confirmDeleteEvent}
+                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-semibold"
+                >
+                  Yes, Delete
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDeletePopup(false);
+                    setEventToDelete(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded font-semibold"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         )}

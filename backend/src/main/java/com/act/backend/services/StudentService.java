@@ -135,4 +135,37 @@ public class StudentService {
 
         return studentEventRepo.findAttendance(eventId, s.getId());
     }
+    public Student updateStudent(Long id, Student updatedStudent) {
+        Student student = studentRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+
+        // update only fields you allow to be changed
+        student.setName(updatedStudent.getName());
+        student.setEmail(updatedStudent.getEmail());
+        student.setDepartment(updatedStudent.getDepartment());
+        student.setPhone(updatedStudent.getPhone());
+        student.setGender(updatedStudent.getGender());
+
+        return studentRepo.save(student);
+    }
+    public List<Map<String, Object>> getAllStudentsWithEventCount() {
+    List<Student> students = studentRepo.findAll();
+    List<Map<String, Object>> result = new ArrayList<>();
+
+    for (Student s : students) {
+        int eventCount = studentEventRepo.findByStudent(s).size();
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", s.getId());
+        data.put("name", s.getName());
+        data.put("email", s.getEmail());
+        data.put("phone", s.getPhone());
+        data.put("gender", s.getGender());
+        data.put("department", s.getDepartment());
+        data.put("eventCount", eventCount);
+        result.add(data);
+    }
+
+    return result;
+}
+
 }
