@@ -4,6 +4,7 @@ A full-stack web application designed to manage student activities, events, and 
 
 Features
   Platform Roles
+  
   Admin
 
     Manage users (students and faculty).
