@@ -89,8 +89,11 @@ Run the Spring Boot application:
 
    Project Structure
     Student-Activity-Portal/
+    |
     ├─ backend/          # Spring Boot backend
+    |
     ├─ frontend/         # React frontend
+    |
     └─ README.md         # Project documentation
 
    License
