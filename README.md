@@ -87,14 +87,13 @@ Run the Spring Boot application:
 
     ./mvnw spring-boot:run
 
-📂 Project Structure
+   Project Structure
     Student-Activity-Portal/
     ├─ backend/          # Spring Boot backend
     ├─ frontend/         # React frontend
     └─ README.md         # Project documentation
 
+   License
 
-📄 License
-
-This project is licensed under the MIT License – see LICENSE
- for details.
+    This project is licensed under the MIT License – see LICENSE
+    for details.
