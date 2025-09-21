@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import StudentNavbar from "../components/StudentNavbar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RegisteredEvent = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchRegisteredEvents = async () => {
@@ -34,7 +35,12 @@ const RegisteredEvent = () => {
 
         setEvents(eventsWithAttendance);
       } catch (err) {
-        setError("Failed to fetch registered events.");
+        if (err.response?.status === 401) {
+          toast.error("Session expired. Redirecting to login...", { autoClose: 3000 });
+          setTimeout(() => window.location.href = "/student/login", 3000);
+        } else {
+          toast.error("Failed to fetch registered events.", { autoClose: 3000 });
+        }
       } finally {
         setLoading(false);
       }
@@ -49,12 +55,13 @@ const RegisteredEvent = () => {
 
   if (loading)
     return (
-      <div className="text-center py-10 text-blue-600 text-lg font-medium">
-        Loading events...
-      </div>
+      <>
+        <StudentNavbar />
+        <div className="text-center py-10 text-blue-600 text-lg font-medium">
+          Loading events...
+        </div>
+      </>
     );
-
-  if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
 
   if (!events.length) {
     return (
@@ -70,6 +77,7 @@ const RegisteredEvent = () => {
   return (
     <>
       <StudentNavbar />
+      <ToastContainer position="top-center" autoClose={3000} theme="colored" />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Event Count + Search */}
@@ -79,9 +87,7 @@ const RegisteredEvent = () => {
           </h2>
 
           <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-full shadow-md transition hover:scale-105 hover:shadow-lg">
-            <span className="text-sm font-medium tracking-wide uppercase">
-              Total
-            </span>
+            <span className="text-sm font-medium tracking-wide uppercase">Total</span>
             <span className="text-lg font-bold">{filteredEvents.length}</span>
             <span className="text-sm font-medium">Events</span>
           </div>
@@ -100,11 +106,9 @@ const RegisteredEvent = () => {
               key={index}
               className="bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6"
             >
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {event.name}
-              </h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">{event.name}</h3>
               <p className="text-gray-600 mb-1">
-                <strong>Description:</strong> {event.description}
+                <strong>Description:</strong> {event.description || "No description"}
               </p>
               <p className="text-gray-600 mb-1">
                 <strong>Date:</strong> {event.date}
@@ -124,19 +128,15 @@ const RegisteredEvent = () => {
               </p>
 
               <div className="mt-4 border-t pt-4">
-                <h4 className="text-lg font-semibold text-blue-600 mb-1">
-                  Faculty Info
-                </h4>
+                <h4 className="text-lg font-semibold text-blue-600 mb-1">Faculty Info</h4>
                 <p className="text-gray-700 text-sm">
                   <strong>Name:</strong> {event.facultyName}
                 </p>
                 <p className="text-gray-700 text-sm">
-                  <strong>Email:</strong>{" "}
-                  {event.facultyEmail || "N/A"}
+                  <strong>Email:</strong> {event.facultyEmail || "N/A"}
                 </p>
                 <p className="text-gray-700 text-sm">
-                  <strong>Department:</strong>{" "}
-                  {event.facultyDepartment || "N/A"}
+                  <strong>Department:</strong> {event.facultyDepartment || "N/A"}
                 </p>
               </div>
             </div>

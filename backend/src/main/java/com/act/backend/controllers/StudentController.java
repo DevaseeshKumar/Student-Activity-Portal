@@ -99,4 +99,30 @@ public class StudentController {
             return ResponseEntity.status(401).build();
         }
     }
+    // UPDATE OWN PROFILE
+@PutMapping("/profile")
+public ResponseEntity<?> updateOwnProfile(HttpSession session, @RequestBody Student updatedStudent) {
+    try {
+        Student savedStudent = studentService.updateOwnProfile(session, updatedStudent);
+        return ResponseEntity.ok(savedStudent);
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(401).body(e.getMessage());
+    }
+}
+
+// UPDATE PASSWORD
+@PutMapping("/profile/password")
+public ResponseEntity<String> updatePassword(
+        HttpSession session,
+        @RequestBody Map<String, String> body
+) {
+    try {
+        String oldPassword = body.get("oldPassword");
+        String newPassword = body.get("newPassword");
+        return ResponseEntity.ok(studentService.updatePassword(session, oldPassword, newPassword));
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(401).body(e.getMessage());
+    }
+}
+
 }

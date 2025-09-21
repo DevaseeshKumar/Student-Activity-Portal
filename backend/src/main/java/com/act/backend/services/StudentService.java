@@ -167,5 +167,49 @@ public class StudentService {
 
     return result;
 }
+// UPDATE OWN PROFILE
+public Student updateOwnProfile(HttpSession session, Student updatedStudent) {
+    Student s = (Student) session.getAttribute("student");
+    if (s == null) throw new RuntimeException("Unauthorized");
+
+    // fetch fresh entity from DB
+    Student student = studentRepo.findById(s.getId())
+            .orElseThrow(() -> new RuntimeException("Student not found with id: " + s.getId()));
+
+    // update only allowed fields
+    student.setName(updatedStudent.getName());
+    student.setDepartment(updatedStudent.getDepartment());
+    student.setPhone(updatedStudent.getPhone());
+    student.setGender(updatedStudent.getGender());
+
+    Student saved = studentRepo.save(student);
+
+    // also update session so new values reflect immediately
+    session.setAttribute("student", saved);
+
+    return saved;
+}
+// UPDATE PASSWORD
+public String updatePassword(HttpSession session, String oldPassword, String newPassword) {
+    Student s = (Student) session.getAttribute("student");
+    if (s == null) throw new RuntimeException("Unauthorized");
+
+    Student student = studentRepo.findById(s.getId())
+            .orElseThrow(() -> new RuntimeException("Student not found with id: " + s.getId()));
+
+    // check old password
+    if (!student.getPassword().equals(oldPassword)) {
+        throw new RuntimeException("Incorrect old password");
+    }
+
+    // set new password
+    student.setPassword(newPassword);
+    studentRepo.save(student);
+
+    // refresh session data
+    session.setAttribute("student", student);
+
+    return "Password updated successfully";
+}
 
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import StudentNavbar from "../components/StudentNavbar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const StudentViewEvents = () => {
   const [events, setEvents] = useState([]);
@@ -18,8 +20,13 @@ const StudentViewEvents = () => {
 
       setLoading(false);
     } catch (err) {
-      console.error("Error fetching events", err);
       setLoading(false);
+      if (err.response?.status === 401) {
+        toast.error("Session expired. Please login again.", { autoClose: 3000 });
+        setTimeout(() => window.location.href = "/student/login", 3000);
+      } else {
+        toast.error("Failed to fetch events.", { autoClose: 3000 });
+      }
     }
   };
 
@@ -30,30 +37,42 @@ const StudentViewEvents = () => {
   const handleRegister = async (eventId) => {
     try {
       await axios.post(`http://localhost:8080/api/students/register-event/${eventId}`, {}, { withCredentials: true });
-      alert("Registered successfully!");
       setRegisteredEvents(prev => [...prev, eventId]);
+      toast.success("Registered successfully!", { autoClose: 2000 });
     } catch (err) {
-      console.error(err);
-      alert(err.response?.data || "Registration failed");
+      if (err.response?.status === 401) {
+        toast.error("Session expired. Redirecting to login...", { autoClose: 3000 });
+        setTimeout(() => window.location.href = "/student/login", 3000);
+      } else {
+        toast.error(err.response?.data || "Registration failed", { autoClose: 3000 });
+      }
     }
   };
 
   const handleUnregister = async (eventId) => {
     try {
       await axios.post(`http://localhost:8080/api/students/unregister-event/${eventId}`, {}, { withCredentials: true });
-      alert("Unregistered successfully!");
       setRegisteredEvents(prev => prev.filter(id => id !== eventId));
+      toast.success("Unregistered successfully!", { autoClose: 2000 });
     } catch (err) {
-      console.error(err);
-      alert("Unregistration failed");
+      if (err.response?.status === 401) {
+        toast.error("Session expired. Redirecting to login...", { autoClose: 3000 });
+        setTimeout(() => window.location.href = "/student/login", 3000);
+      } else {
+        toast.error("Unregistration failed", { autoClose: 3000 });
+      }
     }
   };
 
-  const filteredEvents = events.filter(event => event.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredEvents = events.filter(event =>
+    event.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
       <StudentNavbar />
+      <ToastContainer position="top-center" autoClose={3000} theme="colored" />
+
       <div className="p-6 bg-gray-50 min-h-screen">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           <h2 className="text-3xl font-extrabold text-blue-800">Events</h2>
@@ -83,9 +102,19 @@ const StudentViewEvents = () => {
 
                 <div className="mt-4">
                   {registeredEvents.includes(event.id) ? (
-                    <button onClick={() => handleUnregister(event.id)} className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Unregister</button>
+                    <button
+                      onClick={() => handleUnregister(event.id)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                    >
+                      Unregister
+                    </button>
                   ) : (
-                    <button onClick={() => handleRegister(event.id)} className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Register</button>
+                    <button
+                      onClick={() => handleRegister(event.id)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                    >
+                      Register
+                    </button>
                   )}
                 </div>
               </div>

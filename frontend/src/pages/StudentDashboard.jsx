@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import StudentNavbar from "../components/StudentNavbar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const COLORS = ["#00C49F", "#FF8042", "#FFBB28"]; // you can add more colors if needed
+const COLORS = ["#00C49F", "#FF8042", "#FFBB28"];
 
 const StudentDashboard = () => {
   const [totalEvents, setTotalEvents] = useState(0);
@@ -14,20 +16,13 @@ const StudentDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         // Fetch all events
-        const allEventsRes = await axios.get("http://localhost:8080/api/students/events", {
-          withCredentials: true,
-        });
+        const allEventsRes = await axios.get("http://localhost:8080/api/students/events", { withCredentials: true });
         const allEvents = Array.isArray(allEventsRes.data) ? allEventsRes.data : [];
         setTotalEvents(allEvents.length);
 
         // Fetch registered events
-        const regEventsRes = await axios.get("http://localhost:8080/api/students/registered-events", {
-          withCredentials: true,
-        });
-        const registeredEvents = Array.isArray(regEventsRes.data)
-          ? regEventsRes.data
-          : [regEventsRes.data];
-
+        const regEventsRes = await axios.get("http://localhost:8080/api/students/registered-events", { withCredentials: true });
+        const registeredEvents = Array.isArray(regEventsRes.data) ? regEventsRes.data : [regEventsRes.data];
         setRegisteredEventsCount(registeredEvents.length);
 
         // Fetch attendance for each registered event
@@ -54,7 +49,12 @@ const StudentDashboard = () => {
         });
         setAttendanceStats(stats);
       } catch (err) {
-        console.error("Failed to fetch dashboard data", err);
+        if (err.response?.status === 401) {
+          toast.error("Session expired. Please login again.", { autoClose: 3000 });
+          setTimeout(() => window.location.href = "/student/login", 3000);
+        } else {
+          toast.error("Failed to fetch dashboard data.", { autoClose: 3000 });
+        }
       }
     };
 
@@ -77,6 +77,7 @@ const StudentDashboard = () => {
   return (
     <>
       <StudentNavbar />
+      <ToastContainer position="top-center" autoClose={3000} theme="colored" />
       <div className="min-h-screen bg-gray-100 py-10 px-6">
         <h2 className="text-3xl font-bold text-center text-blue-800 mb-8">Student Dashboard</h2>
 
@@ -96,16 +97,7 @@ const StudentDashboard = () => {
             <h3 className="text-lg font-semibold text-center mb-4 text-gray-700">Event Registration Distribution</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  label
-                >
+                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
@@ -122,16 +114,7 @@ const StudentDashboard = () => {
               <h3 className="text-lg font-semibold text-center mb-4 text-gray-700">Attendance Distribution</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
-                  <Pie
-                    data={attendancePieData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    fill="#8884d8"
-                    label
-                  >
+                  <Pie data={attendancePieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
                     {attendancePieData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
