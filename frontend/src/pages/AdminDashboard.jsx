@@ -71,7 +71,7 @@ const AdminDashboard = () => {
 
         {admin && (
           <p className="text-center text-gray-600 mb-6">
-            Logged in as <strong>{admin.username}</strong> ({admin.email})
+            Welcome <strong>{admin.username}</strong>
           </p>
         )}
 

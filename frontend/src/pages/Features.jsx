@@ -1,46 +1,67 @@
 import React from "react";
 import MainNavbar from "../components/MainNavbar";
 import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
 import { FaUserTie, FaChalkboardTeacher, FaUserGraduate } from "react-icons/fa";
 
 const Features = () => {
   return (
     <>
       <MainNavbar />
-      <section className="min-h-screen bg-gray-50 px-6 py-24">
+
+      {/* Features Section */}
+      <section className="bg-gray-50 px-6 py-12">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl font-extrabold mb-12 text-indigo-700">
+          <h2 className="text-3xl font-bold mb-8 text-gray-900">
             Platform Roles & Features
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-10 mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-3 gap-4">
             {/* Admin */}
-            <div className="bg-gradient-to-br from-indigo-100 via-indigo-200 to-indigo-50 p-8 rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition duration-500 flex flex-col items-center">
-              <FaUserTie className="text-5xl text-indigo-700 mb-4" />
-              <h3 className="text-xl font-bold mb-3 text-indigo-800">Admin</h3>
-              <p className="text-gray-700 text-sm leading-relaxed text-center">
-                Manage users, create events, assign faculty, and configure platform-wide settings.
+            <div className="bg-white p-6 rounded-xl flex flex-col items-center">
+              <FaUserTie className="text-4xl text-indigo-600 mb-3" />
+              <h3 className="text-lg font-semibold mb-2 text-gray-900">Admin</h3>
+              <p className="text-gray-600 text-sm text-center">
+                Manage users, create events, assign faculty, and configure platform settings.
               </p>
             </div>
 
             {/* Faculty */}
-            <div className="bg-gradient-to-br from-emerald-100 via-emerald-200 to-emerald-50 p-8 rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition duration-500 flex flex-col items-center">
-              <FaChalkboardTeacher className="text-5xl text-emerald-700 mb-4" />
-              <h3 className="text-xl font-bold mb-3 text-emerald-800">Faculty</h3>
-              <p className="text-gray-700 text-sm leading-relaxed text-center">
+            <div className="bg-white p-6 rounded-xl flex flex-col items-center">
+              <FaChalkboardTeacher className="text-4xl text-emerald-600 mb-3" />
+              <h3 className="text-lg font-semibold mb-2 text-gray-900">Faculty</h3>
+              <p className="text-gray-600 text-sm text-center">
                 View assigned events, conduct events, and manage student attendance.
               </p>
             </div>
 
             {/* Student */}
-            <div className="bg-gradient-to-br from-yellow-100 via-yellow-200 to-yellow-50 p-8 rounded-3xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition duration-500 flex flex-col items-center">
-              <FaUserGraduate className="text-5xl text-yellow-700 mb-4" />
-              <h3 className="text-xl font-bold mb-3 text-yellow-800">Student</h3>
-              <p className="text-gray-700 text-sm leading-relaxed text-center">
-                Discover, register, and attend events. Track your participation and engagement.
+            <div className="bg-white p-6 rounded-xl flex flex-col items-center">
+              <FaUserGraduate className="text-4xl text-yellow-500 mb-3" />
+              <h3 className="text-lg font-semibold mb-2 text-gray-900">Student</h3>
+              <p className="text-gray-600 text-sm text-center">
+                Discover, register, and attend events. Track your participation.
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Get Started Section */}
+      <section className="bg-gray-100 py-12 text-center">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900">Ready to Get Started?</h2>
+        <p className="text-gray-700 mb-4">Join your college community and start participating in events!</p>
+        <div className="flex justify-center gap-4 flex-wrap">
+          <Link to="/student/signup">
+            <button className="px-6 py-2 bg-yellow-400 text-gray-900 rounded font-semibold">
+              Student Signup
+            </button>
+          </Link>
+          <Link to="/faculty/register">
+            <button className="px-6 py-2 bg-emerald-400 text-gray-900 rounded font-semibold">
+              Faculty Register
+            </button>
+          </Link>
         </div>
       </section>
 

@@ -43,7 +43,7 @@ const AdminNavbar = () => {
             to="/admin/dashboard"
             className="hover:text-yellow-300 transition duration-300"
           >
-            🚀 Admin Portal
+            Admin Portal
           </Link>
         </div>
 

@@ -36,7 +36,7 @@ const FacultyNavbar = () => {
               to="/faculty/dashboard"
               className="hover:text-yellow-300 transition duration-300"
             >
-              🎓 Faculty Panel
+              Faculty Portal
             </Link>
           </div>
 

@@ -18,7 +18,7 @@ const MainNavbar = () => {
             to="/"
             className="text-2xl sm:text-3xl font-extrabold tracking-wider text-white hover:text-yellow-300 transition duration-300"
           >
-            🎓 Student Activity Portal
+            Student Activity Portal
           </Link>
 
           {/* Nav Links */}

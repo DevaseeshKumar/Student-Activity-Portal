@@ -83,7 +83,7 @@ const Contact = () => {
 
       {/* Toast Container */}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
-      <Footer />
+      
     </>
   );
 };

@@ -8,7 +8,7 @@ const Footer = () => {
         {/* Brand Info */}
         <div>
           <h2 className="text-lg sm:text-xl font-bold tracking-wide mb-1">
-            🎓 Student Activity Portal
+             Student Activity Portal
           </h2>
           <p className="text-sm text-pink-100">
             © {new Date().getFullYear()} All rights reserved.

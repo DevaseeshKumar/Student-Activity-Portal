@@ -36,7 +36,7 @@ const StudentNavbar = () => {
               to="/student/dashboard"
               className="hover:text-yellow-300 transition duration-300"
             >
-              🎓 Student Dashboard
+              Student Portal
             </Link>
           </div>
 
