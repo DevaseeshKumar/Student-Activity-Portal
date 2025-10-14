@@ -12,6 +12,7 @@ const ViewStudents = () => {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editStudent, setEditStudent] = useState(null);
+  const [viewEventsStudent, setViewEventsStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
@@ -81,9 +82,17 @@ const ViewStudents = () => {
 
   const handleUpdate = async () => {
     try {
+      const payload = {
+        name: editStudent.name,
+        email: editStudent.email,
+        phone: editStudent.phone,
+        department: editStudent.department,
+        gender: editStudent.gender,
+      };
+
       await axios.put(
         `http://localhost:8080/api/admin/students/${editStudent.id}`,
-        editStudent,
+        payload,
         { withCredentials: true }
       );
       toast.success("Student updated successfully");
@@ -144,23 +153,32 @@ const ViewStudents = () => {
                     <strong>Gender:</strong> {student.gender}
                   </p>
                   <p>
-                    <strong>Registered Events:</strong> {student.eventCount}
+                    <strong>Registered Events:</strong>{" "}
+                    {student.registeredEvents?.length || 0}
                   </p>
                 </div>
 
                 {/* Card Actions */}
-                <div className="flex justify-between mt-4">
+                <div className="flex flex-col gap-2 mt-4">
+                  <div className="flex justify-between gap-2">
+                    <button
+                      onClick={() => setEditStudent({ ...student })}
+                      className="flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => attemptDelete(student.id)}
+                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
                   <button
-                    onClick={() => setEditStudent({ ...student })}
-                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition"
+                    onClick={() => setViewEventsStudent(student)}
+                    className="mt-2 w-full px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium transition"
                   >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => attemptDelete(student.id)}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition"
-                  >
-                    Delete
+                    View Events
                   </button>
                 </div>
               </div>
@@ -173,7 +191,9 @@ const ViewStudents = () => {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-md w-96 text-center">
-            <h3 className="text-lg font-bold mb-4 text-red-600">Confirm Delete</h3>
+            <h3 className="text-lg font-bold mb-4 text-red-600">
+              Confirm Delete
+            </h3>
             <p className="mb-6">Are you sure you want to delete this student?</p>
             <div className="flex justify-center gap-4">
               <button
@@ -197,7 +217,9 @@ const ViewStudents = () => {
       {editStudent && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-md w-96">
-            <h3 className="text-xl font-bold mb-4 text-center text-gray-800">Edit Student</h3>
+            <h3 className="text-xl font-bold mb-4 text-center text-gray-800">
+              Edit Student
+            </h3>
             <div className="space-y-3">
               <input
                 type="text"
@@ -260,6 +282,38 @@ const ViewStudents = () => {
                 className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 font-medium"
               >
                 Update
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Events Modal */}
+      {viewEventsStudent && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-md w-96 max-h-[80vh] overflow-y-auto">
+            <h3 className="text-xl font-bold mb-4 text-center text-gray-800">
+              {viewEventsStudent.name}'s Registered Events
+            </h3>
+            {viewEventsStudent.registeredEvents &&
+viewEventsStudent.registeredEvents.length > 0 ? (
+  <ul className="list-disc list-inside text-gray-700">
+    {viewEventsStudent.registeredEvents.map((event, idx) => (
+      <li key={idx}>{event}</li>
+    ))}
+  </ul>
+) : (
+  <p className="text-center text-red-500">
+    No events registered.
+  </p>
+)}
+
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => setViewEventsStudent(null)}
+                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 font-medium"
+              >
+                Close
               </button>
             </div>
           </div>
